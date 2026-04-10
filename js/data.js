@@ -213,24 +213,69 @@ const LESSONS = [
   }
 ];
 
-const FINGER_MAP = {
+const FINGER_MAP_ABNT2 = {
   '`':'pinky','1':'pinky','2':'ring','3':'middle','4':'index','5':'index',
   '6':'index','7':'index','8':'middle','9':'ring','0':'pinky','-':'pinky','=':'pinky',
   'q':'pinky','w':'ring','e':'middle','r':'index','t':'index',
   'y':'index','u':'index','i':'middle','o':'ring','p':'pinky','[':'pinky',']':'pinky',
   'a':'pinky','s':'ring','d':'middle','f':'index','g':'index',
-  'h':'index','j':'index','k':'middle','l':'ring','ç':'pinky',';':'pinky',"'":'pinky',
+  'h':'index','j':'index','k':'middle','l':'ring','ç':'pinky',
   'z':'pinky','x':'ring','c':'middle','v':'index','b':'index',
   'n':'index','m':'index',',':'middle','.':'ring','/':'pinky',
   ' ':'thumb'
 };
 
-const KEYBOARD_ROWS = [
+const FINGER_MAP_INTL = {
+  '`':'pinky','1':'pinky','2':'ring','3':'middle','4':'index','5':'index',
+  '6':'index','7':'index','8':'middle','9':'ring','0':'pinky','-':'pinky','=':'pinky',
+  'q':'pinky','w':'ring','e':'middle','r':'index','t':'index',
+  'y':'index','u':'index','i':'middle','o':'ring','p':'pinky','[':'pinky',']':'pinky',
+  'a':'pinky','s':'ring','d':'middle','f':'index','g':'index',
+  'h':'index','j':'index','k':'middle','l':'ring',';':'pinky',"'":'pinky',
+  'z':'pinky','x':'ring','c':'middle','v':'index','b':'index',
+  'n':'index','m':'index',',':'middle','.':'ring','/':'pinky',
+  ' ':'thumb'
+};
+
+const KEYBOARD_ROWS_ABNT2 = [
   ['`','1','2','3','4','5','6','7','8','9','0','-','='],
   ['q','w','e','r','t','y','u','i','o','p','[',']'],
   ['a','s','d','f','g','h','j','k','l','ç','~'],
   ['z','x','c','v','b','n','m',',','.','/']
 ];
+
+const KEYBOARD_ROWS_INTL = [
+  ['`','1','2','3','4','5','6','7','8','9','0','-','='],
+  ['q','w','e','r','t','y','u','i','o','p','[',']'],
+  ['a','s','d','f','g','h','j','k','l',';',"'"],
+  ['z','x','c','v','b','n','m',',','.','/']
+];
+
+// Dynamic accessors based on current layout setting
+function getFingerMap() {
+  return state.settings.layout === 'internacional' ? FINGER_MAP_INTL : FINGER_MAP_ABNT2;
+}
+
+function getKeyboardRows() {
+  return state.settings.layout === 'internacional' ? KEYBOARD_ROWS_INTL : KEYBOARD_ROWS_ABNT2;
+}
+
+// Adapt exercise text for the selected layout
+function adaptTextForLayout(text) {
+  if (state.settings.layout === 'internacional') {
+    return text.replace(/ç/g, ';').replace(/Ç/g, ':');
+  }
+  return text;
+}
+
+// Backward compat — used by keyboard.js rendering
+let FINGER_MAP = FINGER_MAP_ABNT2;
+let KEYBOARD_ROWS = KEYBOARD_ROWS_ABNT2;
+
+function refreshLayoutGlobals() {
+  FINGER_MAP = getFingerMap();
+  KEYBOARD_ROWS = getKeyboardRows();
+}
 
 const GAME_WORDS = [
   'casa','mesa','porta','janela','livro','tempo','mundo','entre','sobre',

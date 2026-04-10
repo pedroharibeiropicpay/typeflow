@@ -4,6 +4,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   loadState();
+  refreshLayoutGlobals();
   updateHeaderUI();
   navigate('dashboard');
 

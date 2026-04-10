@@ -157,7 +157,7 @@ function renderLessons() {
     card.innerHTML = `
       <div class="lesson-number">Capítulo ${lesson.chapter} — Lição ${lesson.id}</div>
       <div class="lesson-title">${lesson.title}</div>
-      <div class="lesson-keys">${lesson.keys}</div>
+      <div class="lesson-keys">${adaptTextForLayout(lesson.keys)}</div>
       <div class="lesson-desc">${lesson.desc}</div>
       <div class="lesson-progress-bar"><div class="lesson-progress-fill" style="width:${pct}%"></div></div>
       <div class="lesson-meta">
@@ -190,7 +190,7 @@ function startLesson(lessonId, exIdx) {
   const progress = state.progress[lessonId] || {};
   const exerciseIndex = exIdx !== undefined ? exIdx : (progress.exerciseIndex || 0);
 
-  resetExercise(lesson.exercises[exerciseIndex], lessonId, exerciseIndex);
+  resetExercise(adaptTextForLayout(lesson.exercises[exerciseIndex]), lessonId, exerciseIndex);
 
   document.getElementById('exercise-title').textContent =
     `Capítulo ${lesson.chapter} — ${lesson.title} (${exerciseIndex + 1}/${lesson.exercises.length})`;
@@ -225,7 +225,9 @@ function updateCharDisplay(index, className) {
 function handleKeyPress(e) {
   if (document.getElementById('page-exercise').classList.contains('hidden')) return;
   if (e.key === 'Escape') { navigate('lessons'); return; }
-  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.ctrlKey || e.metaKey) return;
+  // Allow altKey combos that produce a single char (e.g. Option+C → ç on Mac)
+  if (e.altKey && e.key.length > 1) return;
   if (e.key.length > 1 && e.key !== 'Backspace') return;
 
   e.preventDefault();
@@ -425,6 +427,7 @@ function toggleSetting(el, key) {
 
 function saveSettings() {
   state.settings.layout = document.getElementById('setting-layout').value;
+  refreshLayoutGlobals();
   saveState();
 }
 
