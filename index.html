@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TypeFlow — Curso de Digitação</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <header class="app-header">
+    <div class="app-logo" onclick="navigate('dashboard')">TypeFlow<span>.dev</span></div>
+    <nav class="nav-links">
+      <button class="nav-link active" data-page="dashboard" onclick="navigate('dashboard')">Dashboard</button>
+      <button class="nav-link" data-page="lessons" onclick="navigate('lessons')">Lições</button>
+      <button class="nav-link" data-page="game" onclick="navigate('game')">Jogo</button>
+      <button class="nav-link" data-page="stats" onclick="navigate('stats')">Estatísticas</button>
+      <button class="nav-link" onclick="openSettings()">Ajustes</button>
+    </nav>
+    <div class="user-level">
+      <span id="user-level-text">Nv 1</span>
+      <div class="xp-bar"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+      <span id="user-xp-text">0 XP</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- DASHBOARD -->
+    <section id="page-dashboard" class="fade-in">
+      <h1 class="page-title">Bem-vindo de volta!</h1>
+      <p class="page-subtitle">Continue praticando para melhorar sua velocidade e precisão.</p>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Velocidade Média</div>
+          <div class="stat-value accent" id="dash-wpm">0 <span class="stat-unit">WPM</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Precisão Média</div>
+          <div class="stat-value success" id="dash-accuracy">0<span class="stat-unit">%</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Lições Completas</div>
+          <div class="stat-value warning" id="dash-lessons">0<span class="stat-unit">/0</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Tempo Praticado</div>
+          <div class="stat-value secondary" id="dash-time">0<span class="stat-unit">min</span></div>
+        </div>
+      </div>
+      <div class="quick-actions">
+        <div class="quick-action" onclick="continueLesson()">
+          <div class="icon">▶</div>
+          <div class="label">Continuar</div>
+          <div class="desc">Retome de onde parou</div>
+        </div>
+        <div class="quick-action" onclick="navigate('game')">
+          <div class="icon">⌨</div>
+          <div class="label">Palavras Cadentes</div>
+          <div class="desc">Pratique no modo jogo</div>
+        </div>
+        <div class="quick-action" onclick="navigate('stats')">
+          <div class="icon">◔</div>
+          <div class="label">Meu Progresso</div>
+          <div class="desc">Veja suas estatísticas</div>
+        </div>
+      </div>
+      <div class="chart-section">
+        <h3>Evolução da Velocidade (últimas sessões)</h3>
+        <div class="chart-container">
+          <canvas id="chart-wpm" class="chart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- LESSONS -->
+    <section id="page-lessons" class="hidden fade-in">
+      <h1 class="page-title">Lições</h1>
+      <p class="page-subtitle">Avance progressivamente — cada lição desbloqueia a seguinte.</p>
+      <div class="lessons-grid" id="lessons-grid"></div>
+    </section>
+
+    <!-- EXERCISE -->
+    <section id="page-exercise" class="hidden fade-in">
+      <div class="exercise-header">
+        <div><div class="exercise-title" id="exercise-title">Lição 1 — Home Row</div></div>
+        <div class="exercise-controls">
+          <button class="btn btn-sm" onclick="restartExercise()">Reiniciar</button>
+          <button class="btn btn-sm" onclick="navigate('lessons')">Voltar</button>
+        </div>
+      </div>
+      <div class="live-stats">
+        <div class="live-stat">
+          <div class="live-stat-value timer-display" id="live-timer">0:00</div>
+          <div class="live-stat-label">Tempo</div>
+        </div>
+        <div class="live-stat">
+          <div class="live-stat-value wpm-display" id="live-wpm">0</div>
+          <div class="live-stat-label">WPM</div>
+        </div>
+        <div class="live-stat">
+          <div class="live-stat-value accuracy-display" id="live-accuracy">100%</div>
+          <div class="live-stat-label">Precisão</div>
+        </div>
+        <div class="live-stat">
+          <div class="live-stat-value streak-display" id="live-streak">0</div>
+          <div class="live-stat-label">Combo</div>
+        </div>
+      </div>
+      <div class="text-display" id="text-display" tabindex="0"></div>
+      <p class="start-prompt" id="start-prompt">Comece a digitar para iniciar...</p>
+      <div class="keyboard-container" id="keyboard-container"></div>
+    </section>
+
+    <!-- RESULTS -->
+    <section id="page-results" class="hidden fade-in">
+      <div class="results-container">
+        <div class="results-icon" id="results-icon">🏆</div>
+        <h1 class="results-title" id="results-title">Excelente!</h1>
+        <p class="results-subtitle" id="results-subtitle">Você completou a lição com sucesso.</p>
+        <div class="xp-gain" id="results-xp">+50 XP</div>
+        <div class="results-grid">
+          <div class="result-card">
+            <div class="result-label">Velocidade</div>
+            <div class="result-value accent" id="result-wpm">0</div>
+          </div>
+          <div class="result-card">
+            <div class="result-label">Precisão</div>
+            <div class="result-value success" id="result-accuracy">0%</div>
+          </div>
+          <div class="result-card">
+            <div class="result-label">Tempo</div>
+            <div class="result-value secondary" id="result-time">0:00</div>
+          </div>
+          <div class="result-card">
+            <div class="result-label">Maior Combo</div>
+            <div class="result-value warning" id="result-streak">0</div>
+          </div>
+        </div>
+        <div class="problem-keys hidden" id="problem-keys-section">
+          <h4>Teclas que precisam de atenção</h4>
+          <div class="problem-key-list" id="problem-keys-list"></div>
+        </div>
+        <div class="results-actions">
+          <button class="btn" onclick="restartExercise()">Repetir</button>
+          <button class="btn btn-primary" id="btn-next-lesson" onclick="goNextLesson()">Próxima Lição</button>
+          <button class="btn" onclick="navigate('lessons')">Ver Lições</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section id="page-stats" class="hidden fade-in">
+      <h1 class="page-title">Estatísticas</h1>
+      <p class="page-subtitle">Acompanhe sua evolução ao longo do tempo.</p>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Melhor WPM</div>
+          <div class="stat-value accent" id="stats-best-wpm">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Sessões Totais</div>
+          <div class="stat-value warning" id="stats-sessions">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Teclas Digitadas</div>
+          <div class="stat-value secondary" id="stats-keystrokes">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Maior Combo</div>
+          <div class="stat-value success" id="stats-best-streak">0</div>
+        </div>
+      </div>
+      <div class="stats-detail-grid">
+        <div class="stats-section">
+          <h3>Mapa de Calor do Teclado</h3>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:12px">Vermelho = mais erros</p>
+          <div class="heatmap" id="heatmap"></div>
+        </div>
+        <div class="stats-section">
+          <h3>Velocidade por Sessão</h3>
+          <div class="chart-container">
+            <canvas id="chart-stats-wpm" class="chart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:16px;">
+        <button class="btn" onclick="if(confirm('Tem certeza que quer resetar TODO o progresso? Isso não pode ser desfeito.')){resetAllProgress();navigate('dashboard');showToast('Progresso resetado');}">Resetar Progresso</button>
+      </div>
+    </section>
+
+    <!-- GAME -->
+    <section id="page-game" class="hidden fade-in">
+      <h1 class="page-title">Palavras Cadentes</h1>
+      <p class="page-subtitle">Digite as palavras antes que elas cheguem ao fundo!</p>
+      <div class="game-stats">
+        <div class="live-stat">
+          <div class="live-stat-value accent" id="game-score">0</div>
+          <div class="live-stat-label">Pontos</div>
+        </div>
+        <div class="live-stat">
+          <div class="live-stat-value success" id="game-words">0</div>
+          <div class="live-stat-label">Palavras</div>
+        </div>
+        <div class="live-stat">
+          <div class="live-stat-value" style="color:var(--error)" id="game-lives">♥♥♥</div>
+          <div class="live-stat-label">Vidas</div>
+        </div>
+      </div>
+      <div class="game-area" id="game-area">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:1.1rem;" id="game-start-msg">Clique no campo abaixo e comece a digitar!</div>
+      </div>
+      <div class="game-input-area">
+        <input type="text" class="game-input" id="game-input" placeholder="Digite a palavra..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <button class="btn btn-primary" id="game-btn" onclick="startGame()">Iniciar</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-overlay hidden" id="settings-modal" onclick="event.target===this&&closeSettings()">
+  <div class="modal">
+    <h2>Ajustes</h2>
+    <div class="modal-field">
+      <label>Layout do Teclado</label>
+      <select id="setting-layout" onchange="saveSettings()">
+        <option value="br">ABNT2 (Brasileiro)</option>
+        <option value="us">US Internacional</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <div class="toggle-row">
+        <span>Sons de tecla</span>
+        <div class="toggle" id="toggle-sound" onclick="toggleSetting(this, 'sound')"></div>
+      </div>
+    </div>
+    <div class="modal-field">
+      <div class="toggle-row">
+        <span>Mostrar teclado virtual</span>
+        <div class="toggle on" id="toggle-keyboard" onclick="toggleSetting(this, 'showKeyboard')"></div>
+      </div>
+    </div>
+    <div class="modal-field">
+      <div class="toggle-row">
+        <span>Indicador de dedo</span>
+        <div class="toggle on" id="toggle-fingers" onclick="toggleSetting(this, 'showFingers')"></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="closeSettings()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts — ordem importa: data → state → engine → keyboard → game → ui → app -->
+<script src="js/data.js"></script>
+<script src="js/state.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/keyboard.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
